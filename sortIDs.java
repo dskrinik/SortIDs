@@ -30,19 +30,20 @@ public class sortIDs {
 	
 		for (int i = 0; i < a.length; i++){
 			charA = stringToCharArray(a[i]);
-			if(a[i].matches(".*\\d+.*") && a[i].matches(".*[a-z].*") 
-				/*&& check for alternating digits/letters to skip such IDs*/){
+
+			if (charA.length > 1 && alternatingAlphaNums(charA)) {
+				System.out.println("IDs with alternating digits and letters like " + a[i] + " can't be sorted");
+			} else if (charA.length > 1 && a[i].matches(".*\\d+.*") && a[i].matches(".*[a-zA-Z].*")) {
 				alphanumsString += a[i] + ", ";
-			}
-			else if(!a[i].matches(".*\\d+.*")){
+			} else if (!a[i].matches(".*\\d+.*")) {
 				letterChunk = pullLetters(charA);
 				lettersString += letterChunk + ", ";
-			}
-			else if(!a[i].matches(".*[a-z].*")){
+			} else if (!a[i].matches(".*[a-zA-Z].*")) {
 				intChunk = pullInts(charA);
 				digitsString += intChunk + ", ";
-			}
-			else System.out.println("IDs with alternating digits and letters like " + a[i] +" can't be sorted");
+			} else
+				System.out.println("IDs with characters other than digits or letter are invalid");
+
 		}		
 		sortedDigits = sortDigits(digitsString);
 		sortedAlphanums = sortAlphanums(alphanumsString);
@@ -63,6 +64,17 @@ public class sortIDs {
 			result[a1.length + a2.length + i] = a3[i];
 		}
 		return result;
+	}
+	
+	static boolean alternatingAlphaNums(char[] a) {
+		int changeCounter = 0;
+		
+		for(int i = 0; i<a.length-1; i++) {
+			if((Character.isDigit(a[i]) && Character.isAlphabetic(a[i+1])) ||
+					(Character.isDigit(a[i+1]) && Character.isAlphabetic(a[i])))
+				changeCounter += 1; 
+		}
+		return changeCounter>1;
 	}
 	
 	static Integer[] sortDigits(String s){
@@ -197,10 +209,7 @@ public class sortIDs {
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(fileName))){
 			while((input = br.readLine())!=null){
-				if(result.length()<1){
-					result += input;
-				}
-				result = result + ", " + input;
+				result = result + input + ",";
 			}
 		} catch(IOException e){e.printStackTrace();}
 		return result;
